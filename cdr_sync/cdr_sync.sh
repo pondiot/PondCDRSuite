@@ -169,7 +169,13 @@ EOF
 
     # Run lftp with timeout
     local rc=0
-    timeout "${TIMEOUT}" lftp -f "${lftp_script}" > "${LFTP_LOG_FILE}" 2>&1 || rc=$?
+    local lftp_output
+    lftp_output=$(timeout "${TIMEOUT}" lftp -f "${lftp_script}" 2>&1) || rc=$?
+
+    # Only write lftp log if there's actual output
+    if [[ -n "${lftp_output}" ]]; then
+        echo "${lftp_output}" > "${LFTP_LOG_FILE}"
+    fi
 
     return ${rc}
 }
