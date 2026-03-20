@@ -47,8 +47,8 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your Telegram/Email notification settings
 
-cp configs/client_example.env.example configs/provider_a.env
-# Edit configs/provider_a.env with your SFTP credentials
+cp configs/client_example.env.example configs/client_a.env
+# Edit configs/client_a.env with your SFTP credentials
 
 # Make scripts executable
 chmod +x cdr_sync.sh send_alert.py
@@ -105,10 +105,10 @@ SEND_EMAIL=false         # Enable email alerts for this client
 ./cdr_sync.sh <pull|push> <config_file>
 
 # Download files from remote server
-./cdr_sync.sh pull configs/provider_a.env
+./cdr_sync.sh pull configs/client_a.env
 
 # Upload files to remote server
-./cdr_sync.sh push configs/client_acme.env
+./cdr_sync.sh push configs/client_c.env
 ```
 
 ## Logging
@@ -126,7 +126,7 @@ Each line is a JSON object:
 ```json
 {
   "timestamp": "2026-02-05T16:30:00Z",
-  "config": "provider_a",
+  "config": "client_a",
   "operation": "pull",
   "host": "sftp.example.com",
   "status": "success",
@@ -149,14 +149,14 @@ Add entries:
 
 ```cron
 # Pull from provider every hour at :00
-0 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh pull configs/provider_a.env >> /dev/null 2>&1
+0 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh pull configs/client_a.env >> /dev/null 2>&1
 
 # Push to client every hour at :10
-10 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh push configs/client_acme.env >> /dev/null 2>&1
+10 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh push configs/client_c.env >> /dev/null 2>&1
 
 # Multiple pulls with different schedules
-*/15 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh pull configs/provider_a.env >> /dev/null 2>&1
-30 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh pull configs/provider_b.env >> /dev/null 2>&1
+*/15 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh pull configs/client_a.env >> /dev/null 2>&1
+30 * * * * cd /path/to/PondCDRSuite/cdr_sync && ./cdr_sync.sh pull configs/client_b.env >> /dev/null 2>&1
 ```
 
 ## Log Rotation
