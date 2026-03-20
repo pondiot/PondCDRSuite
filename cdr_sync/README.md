@@ -111,6 +111,24 @@ SEND_EMAIL=false         # Enable email alerts for this client
 ./cdr_sync.sh push configs/client_c.env
 ```
 
+### Understanding Pull vs Push
+
+It's important to understand the direction of data flow:
+
+| Operation | Source     | Destination | SFTP_HOST Role                      |
+|-----------|------------|-------------|-------------------------------------|
+| **pull**  | REMOTE_DIR | LOCAL_DIR   | Remote server (download from)       |
+| **push**  | LOCAL_DIR  | REMOTE_DIR  | Remote server (upload to)           |
+
+**Key points:**
+- `SFTP_HOST` - Always the remote SFTP server you connect to
+- `REMOTE_DIR` - Always the path **on the SFTP server**
+- `LOCAL_DIR` - Always the path **on your local machine**
+
+**Examples:**
+- `pull` downloads files **from** `REMOTE_DIR` on `SFTP_HOST` **to** `LOCAL_DIR` on your machine
+- `push` uploads files **from** `LOCAL_DIR` on your machine **to** `REMOTE_DIR` on `SFTP_HOST`
+
 ## Logging
 
 Logs are stored in the `logs/` directory with daily rotation:
