@@ -22,6 +22,8 @@ logging.basicConfig(
 
 def send_telegram(subject: str, message: str, token: str, chat_id: str) -> bool:
     try:
+        # Convert literal \n to actual newlines
+        message = message.replace('\\n', '\n')
         text = f"*{subject}*\n\n{message}"
         r = requests.post(
             "https://api.telegram.org/bot%s/sendMessage" % token,
@@ -68,6 +70,8 @@ def send_email(
     email_to: str,
 ) -> bool:
     try:
+        # Convert literal \n to actual newlines
+        message = message.replace('\\n', '\n')
         access_token = _get_access_token(tenant_id, client_id, client_secret)
 
         recipients = [

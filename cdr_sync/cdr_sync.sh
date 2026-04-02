@@ -284,14 +284,21 @@ main() {
             local error_msg="Operation timed out after ${TIMEOUT}s"
             log_text "ERROR" "${error_msg}"
             log_json "timeout" "Operation timed out" "${error_msg}" "${duration}" "0"
-            send_alert "CDR Sync Timeout: ${CONFIG_NAME}" "Operation: ${OPERATION}\nHost: ${SFTP_HOST}\nTimeout: ${TIMEOUT}s\nDuration: ${duration}s"
+            send_alert "CDR Sync Timeout: ${CONFIG_NAME}" "Operation: ${OPERATION}
+Host: ${SFTP_HOST}
+Timeout: ${TIMEOUT}s
+Duration: ${duration}s"
             ;;
         *)
             local lftp_error
             lftp_error=$(extract_lftp_error)
             log_text "ERROR" "Sync failed (rc=${rc}): ${lftp_error}"
             log_json "failed" "Sync failed" "${lftp_error}" "${duration}" "0"
-            send_alert "CDR Sync Failed: ${CONFIG_NAME}" "Operation: ${OPERATION}\nHost: ${SFTP_HOST}\nExit code: ${rc}\nError: ${lftp_error}\nDuration: ${duration}s"
+            send_alert "CDR Sync Failed: ${CONFIG_NAME}" "Operation: ${OPERATION}
+Host: ${SFTP_HOST}
+Exit code: ${rc}
+Error: ${lftp_error}
+Duration: ${duration}s"
             ;;
     esac
 
