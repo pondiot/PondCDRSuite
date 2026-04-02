@@ -154,6 +154,7 @@ set cmd:fail-exit true
 set mirror:parallel-transfer-count ${PARALLEL_TRANSFERS}
 set mirror:use-pget-n 2
 set ssl:verify-certificate no
+set log:show-time true
 
 open -u "${SFTP_USER}","${SFTP_PASSWORD}" -p ${SFTP_PORT} sftp://${SFTP_HOST}
 
