@@ -1,0 +1,178 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get short SHA
+        id: sha
+        run: |
+          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
+          echo "Short SHA: $SHORT_SHA"
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.CDR_SYNC_SERVER_HOST }}
+          username: ${{ secrets.CDR_SYNC_SERVER_USER }}
+          password: ${{ secrets.CDR_SYNC_SERVER_PASSWORD }}
+          port: ${{ secrets.CDR_SYNC_SERVER_PORT || 22 }}
+          script_stop: false  # Continue on error to show all output
+          request_pty: true   # Get proper TTY for better error handling
+          script: |
+            set -e  # Exit on error
+
+            # Set variables
+            DEPLOY_DIR="/home/cdr_admin/PondCDRSuite"
+            VERSION="${{ steps.sha.outputs.short_sha }}"
+
+            echo "=========================================="
+            echo "🚀 PondCDRSuite Deployment"
+            echo "=========================================="
+            echo "Version: $VERSION"
+            echo "Deploy Path: $DEPLOY_DIR"
+            echo "=========================================="
+
+            # Prerequisites check
+            echo ""
+            echo "🔍 Checking prerequisites..."
+
+            # Check git
+            echo -n "  ✓ Git: "
+            if command -v git >/dev/null 2>&1; then
+              git --version
+            else
+              echo "❌ NOT FOUND"
+              echo "ERROR: Git is not installed"
+              exit 1
+            fi
+
+            # Check/create deploy directory
+            echo -n "  ✓ Deploy directory: "
+            if [ -d "$DEPLOY_DIR" ]; then
+                echo "EXISTS ($DEPLOY_DIR)"
+              else
+                echo "ERROR: Directory not found"
+                exit 1
+            fi
+
+            echo ""
+            echo "=========================================="
+            echo "📦 Repository Update"
+            echo "=========================================="
+
+            cd "$DEPLOY_DIR" || {
+              echo "ERROR: Cannot access $DEPLOY_DIR"
+              exit 1
+            }
+
+            # Check if .git exists
+            if [ ! -d ".git" ]; then
+              echo "ERROR: Not a git repository"
+              exit 1
+            fi
+
+            # Stash local changes to protect .env and config files
+            echo ""
+            echo "  → Stashing local changes (.env, configs, database)..."
+            git stash push -u -m "Deploy stash $VERSION" \
+              -- '*.env' \
+              'cdr_sync/configs/*' \
+              'cdr_sync/.env' \
+              'cdr_notify/*.db' \
+              'cdr_notify/*.db-*' \
+              2>&1 || echo "  (nothing to stash)"
+
+            echo "  ✓ Local changes stashed"
+
+            echo ""
+            echo "  → Fetching all branches..."
+            git fetch --all 2>&1 || {
+              echo "ERROR: git fetch failed"
+              exit 1
+            }
+
+            echo "  → Resetting to origin/main..."
+            git reset --hard origin/main 2>&1 || {
+              echo "ERROR: git reset failed"
+              exit 1
+            }
+
+            echo "  ✓ Repository updated to origin/main"
+
+            # Restore stashed changes
+            echo ""
+            echo "  → Restoring local changes..."
+            if git stash list | grep -q "Deploy stash $VERSION"; then
+              git stash pop || echo "  (warning: stash pop had conflicts)"
+              echo "  ✓ Local changes restored"
+            else
+              echo "  (nothing to restore)"
+            fi
+
+            # Show current commit
+            echo ""
+            echo "  Current commit:"
+            git log -1 --oneline || echo "    (unable to show commit)"
+
+            echo ""
+            echo "=========================================="
+            echo "🔧 Permissions Check"
+            echo "=========================================="
+
+            # Ensure cdr_sync.sh is executable
+            if [ -f "cdr_sync/cdr_sync.sh" ]; then
+              chmod +x cdr_sync/cdr_sync.sh
+              echo "  ✓ cdr_sync.sh is executable"
+            fi
+
+            # Ensure send_alert.py is executable
+            if [ -f "cdr_sync/send_alert.py" ]; then
+              chmod +x cdr_sync/send_alert.py
+              echo "  ✓ send_alert.py is executable"
+            fi
+
+            echo ""
+            echo "=========================================="
+            echo "⏰ Cron Status"
+            echo "=========================================="
+
+            # Check if cron is running
+            if systemctl is-active --quiet cron; then
+              echo "  ✓ Cron service is running"
+
+              # Check if telna cron exists
+              if [ -f "/etc/cron.d/telna" ]; then
+                echo "  ✓ Cron file exists: /etc/cron.d/telna"
+
+                # Show cron schedule
+                echo ""
+                echo "  Current cron schedule:"
+                grep -v '^#' /etc/cron.d/telna | grep -v '^$' | head -5 || echo "    (empty)"
+              else
+                echo "  ⚠️  Cron file not found: /etc/cron.d/telna"
+              fi
+            else
+              echo "  ⚠️  Cron service is not running"
+            fi
+
+            echo ""
+            echo "=========================================="
+            echo "✅ Deployment Successful!"
+            echo "=========================================="
+            echo "Version: $VERSION"
+            echo "Deploy Path: $DEPLOY_DIR"
+            echo ""
+            echo "Next cron run:"
+            date -d 'next hour' +%H:%M 2>/dev/null || echo "  (unable to calculate)"
+
+            echo ""
+            echo "=========================================="
