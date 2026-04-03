@@ -173,9 +173,9 @@ EOF
     lftp_output=$(timeout "${TIMEOUT}" lftp -f "${lftp_script}" 2>&1) || rc=$?
 
     # Only write lftp log if there's actual output
-    if [[ -n "${lftp_output}" ]]; then
-        # Add timestamp to each line
-        echo "${lftp_output}" | awk '{now=strftime("%Y-%m-%d %H:%M:%S"); print now " " $0}' > "${LFTP_LOG_FILE}"
+    if [[ -n "${lftp_output}" ]; then
+        # Add timestamp to each line (strftime called per line)
+        echo "${lftp_output}" | awk '{print strftime("%Y-%m-%d %H:%M:%S") " " $0}' > "${LFTP_LOG_FILE}"
     fi
 
     return ${rc}
