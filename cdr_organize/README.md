@@ -40,8 +40,8 @@ python3 cdr_organize.py <SOURCE_DIR> <DEST_DIR>
 
 Examples:
 ```bash
-python3 cdr_organize.py /home/cdr_admin/CDRs/inbound/telna_cdr /srv/cdr-office
-python3 cdr_organize.py /home/cdr_admin/CDRs/inbound/telna_lu /srv/cdr-office
+python3 cdr_organize.py /home/cdr_admin/CDRs/inbound/company_cdr /srv/cdr-office
+python3 cdr_organize.py /home/cdr_admin/CDRs/inbound/company_lu /srv/cdr-office
 ```
 
 ## Verification
@@ -59,7 +59,7 @@ ls -la /srv/cdr-office/lu/
 
 Test run (dry run - just check what would be processed):
 ```bash
-ls /home/cdr_admin/CDRs/inbound/telna_cdr/*.csv | head -5
+ls /home/cdr_admin/CDRs/inbound/company_cdr/*.csv | head -5
 ```
 
 ## File Processing Rules

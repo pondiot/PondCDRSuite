@@ -3,5 +3,5 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-*/5 * * * * cdr_admin python3 /home/cdr_admin/PondCDRSuite/cdr_organize/cdr_organize.py /home/cdr_admin/CDRs/inbound/telna_cdr /srv/cdr-office
-*/5 * * * * cdr_admin python3 /home/cdr_admin/PondCDRSuite/cdr_organize/cdr_organize.py /home/cdr_admin/CDRs/inbound/telna_lu /srv/cdr-office
+*/5 * * * * cdr_admin python3 /home/cdr_admin/PondCDRSuite/cdr_organize/cdr_organize.py /home/cdr_admin/CDRs/inbound/company_cdr /srv/cdr-office
+*/5 * * * * cdr_admin python3 /home/cdr_admin/PondCDRSuite/cdr_organize/cdr_organize.py /home/cdr_admin/CDRs/inbound/company_lu /srv/cdr-office
