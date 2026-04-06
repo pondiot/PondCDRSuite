@@ -62,16 +62,6 @@ Test run (dry run - just check what would be processed):
 ls /home/cdr_admin/CDRs/inbound/telna_cdr/*.csv | head -5
 ```
 
-## Log Format
-
-```
-2026-04-06 18:00:00 - COPIED LIVE_Client_CDR_20250101120000_1_20250101130000.csv
-2026-04-06 18:00:01 - SKIPPED LIVE_Client_CDR_20250101110000_1_20250101120000.csv
-2026-04-06 18:00:02 - OVERWRITTEN LIVE_Client_CDR_20250101100000_1_20250101110000.csv
-2026-04-06 18:00:03 - ERROR LIVE_Client_CDR_20250101090000_1_20250101100000.csv: Permission denied
-2026-04-06 18:00:04 - RUN SUMMARY: copied=15 skipped=5 overwritten=2 errors=1
-```
-
 ## File Processing Rules
 
 1. Only `.csv` files from SOURCE_DIR root (no recursion)
