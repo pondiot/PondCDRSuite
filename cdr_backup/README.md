@@ -2,6 +2,13 @@
 
 Archive CDR/LU files to prevent data loss from provider retention policies.
 
+## How it works
+
+- Reads directly from `/home/cdr_admin/CDRs/outbound/` (source of truth)
+- Finds files for current day by parsing dates from filenames
+- Creates daily `.tar.gz` archives in `/home/cdr_admin/CDRs/backup/`
+- Archives older than 365 days are automatically deleted
+
 ## Directory Structure
 
 ```
@@ -16,11 +23,16 @@ Archive CDR/LU files to prevent data loss from provider retention policies.
     └── ...
 ```
 
+**Archive contents:** Files are stored as `{CLIENT}_{FILENAME}` to avoid naming conflicts.
+
 ## Usage
 
 ```bash
-# Backup all file types (default)
+# Backup today's files (default)
 python3 cdr_backup.py
+
+# Backup specific date
+python3 cdr_backup.py --date 2026-04-06
 
 # Backup specific file type
 python3 cdr_backup.py --file-type cdr
@@ -30,20 +42,16 @@ python3 cdr_backup.py --file-type lu
 python3 cdr_backup.py --dry-run
 ```
 
-## Retention
+## Cron Integration
 
-- Archives older than 365 days are automatically deleted
-- Configurable via `RETENTION_DAYS` in config.py
+Add to crontab to run daily at 23:50:
 
-## Integration
-
-Run after cdr_publish in cron:
 ```bash
-cdr_sync.sh pull configs/telna_cdr.env && \
-cdr_organize.py /home/cdr_admin/CDRs/inbound/telna_cdr /home/cdr_admin/CDRs/outbound && \
-cdr_publish.py && \
-cdr_backup.py
+# CDR Backup - Daily backup at 23:50
+50 23 * * * cdr_admin /home/cdr_admin/PondCDRSuite/cdr_backup/cdr_backup.py
 ```
+
+Note: Runs independently of cdr_sync/cdr_organize/cdr_publish chain.
 
 ## Logging
 
@@ -51,7 +59,8 @@ Logs: `logs/backup_process.log`
 
 Format:
 ```
-2025-04-08 10:00:00 - ARCHIVED 2026-04-06 -> /home/cdr_admin/CDRs/backup/cdr/2026-04-06.tar.gz
-2025-04-08 10:00:01 - DELETED old archive: 2025-01-01.tar.gz (from 2025-01-01)
-2025-04-08 10:00:02 - RUN SUMMARY: archived=2 skipped=0 deleted=5 errors=0
+2025-04-08 23:50:00 - Added /home/cdr_admin/CDRs/outbound/cdr/Zeppelincompany/file.csv as Zeppelincompany_file.csv
+2025-04-08 23:50:01 - ARCHIVED cdr 2026-04-06 -> /home/cdr_admin/CDRs/backup/cdr/2026-04-06.tar.gz (150 files)
+2025-04-08 23:50:02 - DELETED old archive: 2025-01-01.tar.gz
+2025-04-08 23:50:03 - RUN SUMMARY: archived=300 deleted=5 errors=0
 ```

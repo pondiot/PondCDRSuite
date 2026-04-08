@@ -3,8 +3,8 @@
 cdr_backup configuration
 """
 
-# Source directory (cdr_publish output - by_date structure)
-SOURCE_BASE = "/srv/cdr_publish"
+# Source directory (cdr_organize output - source of truth)
+SOURCE_BASE = "/home/cdr_admin/CDRs/outbound"
 
 # Target directory (backup storage)
 TARGET_BASE = "/home/cdr_admin/CDRs/backup"
