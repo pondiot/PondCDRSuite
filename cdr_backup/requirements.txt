@@ -1,0 +1,2 @@
+# cdr_backup requirements
+# Standard library only - no external dependencies needed
