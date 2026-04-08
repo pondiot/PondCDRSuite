@@ -33,7 +33,7 @@ LOG_DIR = os.path.join(SCRIPT_DIR, "logs")
 LOG_FILE = os.path.join(LOG_DIR, "backup_process.log")
 
 
-def setup_logger():
+def setup_logger(dry_run: bool = False):
     """Setup logging configuration."""
     os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -43,6 +43,12 @@ def setup_logger():
     handler = logging.FileHandler(LOG_FILE)
     handler.setFormatter(logging.Formatter('%(asctime)s - %(message)s', '%Y-%m-%d %H:%M:%S'))
     logger.addHandler(handler)
+
+    # In dry-run mode, also print to console
+    if dry_run:
+        console = logging.StreamHandler()
+        console.setFormatter(logging.Formatter('%(asctime)s - %(message)s', '%Y-%m-%d %H:%M:%S'))
+        logger.addHandler(console)
 
     return logger
 
@@ -203,8 +209,8 @@ def main():
     else:
         target_date = datetime.now().strftime("%Y-%m-%d")
 
-    # Setup logger
-    logger = setup_logger()
+    # Setup logger (console output in dry-run mode)
+    logger = setup_logger(dry_run=args.dry_run)
 
     if args.dry_run:
         logger.info(f"DRY RUN MODE - would archive date: {target_date}")
