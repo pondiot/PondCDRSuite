@@ -117,8 +117,9 @@ def should_process_file(
     Returns:
         (should_process, reason) tuple
     """
-    # Check file extension
-    if not filename.lower().endswith(".csv"):
+    # Check file extension (accept both .csv and csv without dot - Telna bug)
+    fname_lower = filename.lower()
+    if not (fname_lower.endswith(".csv") or fname_lower.endswith("csv")):
         return False, "not a CSV file"
 
     # Check file type
@@ -151,6 +152,20 @@ def should_process_file(
     return True, ""
 
 
+def normalize_csv_filename(filename: str) -> str:
+    """
+    Normalize CSV filename by ensuring .csv extension.
+
+    Handles Telna bug where files end with 'csv' instead of '.csv'.
+    """
+    if filename.lower().endswith(".csv"):
+        return filename
+    if filename.lower().endswith("csv"):
+        # Add dot before csv
+        return filename[:-3] + ".csv"
+    return filename
+
+
 def build_dest_path(
     source_path: str, filename: str, config: CDRCopyConfig
 ) -> Optional[str]:
@@ -175,8 +190,8 @@ def build_dest_path(
             return None
         dest_parts.append(date_str)
 
-    # Add filename
-    dest_parts.append(filename)
+    # Add normalized filename (fix missing .csv extension)
+    dest_parts.append(normalize_csv_filename(filename))
 
     return os.path.join(*dest_parts)
 
