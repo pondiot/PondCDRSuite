@@ -6,4 +6,5 @@
     missingok
     notifempty
     copytruncate
+    su cdr_admin cdr_admin
 }
