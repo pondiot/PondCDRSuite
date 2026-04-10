@@ -1,0 +1,9 @@
+/home/alexr/Dev/PondCDRSuite/cdr_copy/logs/cdr_copy.log {
+    daily
+    rotate 7
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}
