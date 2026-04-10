@@ -1,4 +1,0 @@
-# PondCDRSuite ETL - Extract Layer (CDR)
-# Pull every hour at 00 minutes past the hour
-
-0 * * * * cdr_admin /home/cdr_admin/PondCDRSuite/cdr_sync/cdr_sync.sh pull configs/telna_cdr.env

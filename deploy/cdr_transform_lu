@@ -1,4 +1,0 @@
-# PondCDRSuite ETL - Transform Layer (LU)
-# Process every 5 minutes
-
-*/5 * * * * cdr_admin python3 /home/cdr_admin/PondCDRSuite/cdr_transform/cdr_transform.py lu

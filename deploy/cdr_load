@@ -1,4 +1,0 @@
-# PondCDRSuite ETL - Load Layer
-# Load to database every hour at 00 minutes past the hour
-
-0 * * * * cdr_admin python3 /home/cdr_admin/PondCDRSuite/cdr_load/cdr_load.py

@@ -1,4 +1,0 @@
-# PondCDRSuite ETL - Extract Layer (LU)
-# Pull every hour at 30 minutes past the hour
-
-30 * * * * cdr_admin /home/cdr_admin/PondCDRSuite/cdr_sync/cdr_sync.sh pull configs/telna_lu.env

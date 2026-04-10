@@ -1,4 +1,0 @@
-# PondCDRSuite Sync - Telna CDR
-# Pull every hour at 00 minutes past the hour
-
-0 * * * * cdr_admin python3 /home/cdr_admin/PondCDRSuite/scripts/telna_cdr_sync.sh

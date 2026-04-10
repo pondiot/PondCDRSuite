@@ -1,4 +1,0 @@
-# CDR Backup - Daily backup at 23:50
-# Archives files for current day from outbound to prevent data loss
-
-50 23 * * * cdr_admin /home/cdr_admin/PondCDRSuite/cdr_backup/cdr_backup.py

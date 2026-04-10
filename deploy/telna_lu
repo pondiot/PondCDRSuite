@@ -1,4 +1,0 @@
-# PondCDRSuite Sync - Telna LU
-# Pull every hour at 30 minutes past the hour
-
-30 * * * * cdr_admin /home/cdr_admin/PondCDRSuite/cdr_sync/cdr_sync.sh pull configs/telna_lu.env && python3 /home/cdr_admin/PondCDRSuite/cdr_transform/cdr_transform.py lu && /home/cdr_admin/PondCDRSuite/cdr_load/cdr_load.py
