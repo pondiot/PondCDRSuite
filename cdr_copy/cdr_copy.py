@@ -79,7 +79,7 @@ def extract_company(filename: str) -> Optional[str]:
     Extract company from filename.
 
     Pattern: LIVE_{Company}_CDR_... or LIVE_{Company}_LU_...
-    Returns company name with underscores replaced by spaces.
+    Returns company name normalized (underscores and spaces removed for consistent folder naming).
     """
     if not filename.startswith("LIVE_"):
         return None
@@ -95,8 +95,8 @@ def extract_company(filename: str) -> Optional[str]:
         company = after_prefix[:lu_pos]
 
     if company:
-        # Replace underscores with spaces
-        return company.replace("_", " ")
+        # Replace underscores with spaces first, then remove all spaces for consistent folder naming
+        return company.replace("_", " ").replace(" ", "")
     return None
 
 
